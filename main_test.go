@@ -1,7 +1,6 @@
 package main
 
 import (
-	"io/ioutil"
 	"os"
 	"testing"
 )
@@ -10,15 +9,6 @@ var (
 	requiredFiles = []string{"README.md", "main.go", "main_test.go", "go.mod"}
 )
 
-func Contains[T comparable](s []T, e T) bool {
-	for _, v := range s {
-		if v == e {
-			return true
-		}
-	}
-	return false
-}
-
 func TestCheckRequiredFiles(t *testing.T) {
 
 	dir, err := os.Getwd()
@@ -26,16 +16,18 @@ func TestCheckRequiredFiles(t *testing.T) {
 		t.Errorf(err.Error())
 	}
 
-	files, err := ioutil.ReadDir(dir)
+	files, err := os.ReadDir(dir)
 	if err != nil {
 		t.Errorf("Please check permissions for the dir - %s ", dir)
 	}
-
-	for _, file := range files {
-		fileName := file.Name()
-		if !Contains(requiredFiles, fileName) {
-			t.Errorf("File doesnt exist - %s", fileName)
+req:
+	for _, reqFile := range requiredFiles {
+		for _, file := range files {
+			if reqFile == file.Name() {
+				continue req
+			}
 		}
+		t.Errorf("File doesn't exist - %s", reqFile)
 	}
 }
 
