@@ -1,5 +1,6 @@
 package main
 
+//проба пера
 import (
 	"fmt"
 )
